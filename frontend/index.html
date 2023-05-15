@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register and Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* body {
+            background-image: url("fajr.jpeg");
+            font-family: 'Roboto', sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+        } */
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: left; /* Add this line to center the titles */
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 40px;
+            margin-right: 175px;
+            color: #0c0c23;
+        
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1em;
+        }
+
+        label {
+            margin-bottom: 0.5em;
+        }
+
+        input {
+            margin-bottom: 1em;
+        }
+
+        #message {
+            margin-bottom: 1em;
+        }
+        body {
+            background-image: url("fajr.jpeg");
+            font-family: 'Roboto', sans-serif;
+            /* background-image: url('https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcSJKyrj1M_E4zNvs1V3mfNkv13MajxmmotwGgNlb639NJVMdPgVDHv29wgH_SnTO_Ep_SPNM6vm_yslNWc'); */
+            background-size: 75%;
+            background-position: center;
+            background-attachment: fixed;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Optional: Add a semi-transparent white background to the container for better readability */
+        .container {
+            background-color: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            margin-top: 50px; /* Add this line to move the container down */
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        /* Popup Modal */
+        .popup {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Welcome to Fajr App</h2>
+    <div class="container">
+
+        <h1>Login</h1>
+        <form id="loginForm">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" required>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" required>
+            <button type="submit">Login</button>
+        </form>
+
+        <div id="message"></div>
+    </div>
+
+    <div class="container">
+        <p>Not registered yet? <a href="register.html">Create an account</a></p> <!-- Add this line -->
+    </div>
+
+    <!-- Popup Modal -->
+    <div id="popup" class="popup hidden">
+        <div class="popup-content">
+        <span id="closePopup" class="close">&times;</span>
+        <p>Login successful!</p>
+        </div>
+    </div>
+  
+
+    <script>
+        function showMessage(message, isError = false) {
+            const messageElement = document.getElementById("message");
+            messageElement.innerHTML = message;
+            if (isError) {
+                messageElement.classList.add("error");
+            } else {
+                messageElement.classList.remove("error");
+            }
+        }
+
+        document.getElementById("loginForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const username = document.getElementById("loginUsername").value;
+            const password = document.getElementById("loginPassword").value;
+            const response = await fetch("http://localhost:8000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data)
+                showPopup(data.id); // Show the custom popup on successful login
+            } else {
+                showMessage("Invalid username or password!", true);
+            }
+        });
+
+        function showPopup(userId) {
+            const popup = document.getElementById("popup");
+            const closePopup = document.getElementById("closePopup");
+
+            // Show the popup
+            popup.classList.remove("hidden");
+
+            // Add a click event listener to close the popup
+            closePopup.addEventListener("click", () => {
+                closeAndRedirect();
+            });
+
+            // Automatically close the popup after 3 seconds
+            setTimeout(() => closeAndRedirect(userId), 1000);
+        }
+
+        function closeAndRedirect(userId) {
+            sessionStorage.setItem("userId", userId);
+            const popup = document.getElementById("popup");
+            popup.classList.add("hidden");
+            window.location.href = "dashboard.html"; // Redirect to dashboard.html after closing the popup
+        }
+
+    </script>
+</body>
+</html>

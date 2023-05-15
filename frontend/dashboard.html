@@ -1,0 +1,83 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the Dashboard</h1>
+    <p>User ID: <span id="userId"></span></p>
+    <button id="logoutButton">Logout</button>
+    <script>
+        const userId = sessionStorage.getItem("userId");
+
+        if (!userId) {
+            window.location.href = "index.html";
+        } else {    
+            document.getElementById("userId").innerText = userId;
+        }
+
+        document.getElementById("logoutButton").addEventListener("click", () => {
+            sessionStorage.removeItem("userId");
+            window.location.href = "index.html";
+        });
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Dashboard</h1>
+        <p>User ID: <span id="userId"></span></p>
+        <button id="logoutButton" class="btn btn-primary">Logout</button>
+        <h2>List of Users</h2>
+        <ul class="list-group" id="userList"></ul>
+        <button id="loadUsersButton" class="btn btn-secondary">Load Users</button>
+    </div>
+
+    <script>
+        const userId = sessionStorage.getItem("userId");
+
+        if (!userId) {
+            window.location.href = "index.html";
+        } else {    
+            document.getElementById("userId").innerText = userId;
+        }
+
+        document.getElementById("logoutButton").addEventListener("click", () => {
+            sessionStorage.removeItem("userId");
+            window.location.href = "index.html";
+        });
+
+        document.getElementById("loadUsersButton").addEventListener("click", async () => {
+            const response = await fetch("http://localhost:8000/get-all-users");
+            const users = await response.json();
+
+            console.log(users)
+            const userList = document.getElementById("userList");
+            userList.innerHTML = "";
+
+            users.forEach(user => {
+                const li = document.createElement("li");
+                li.classList.add("list-group-item");
+                li.textContent = `ID: ${user.ID} - Username: ${user.Username}`;
+                userList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>
+
